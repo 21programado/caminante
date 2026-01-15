@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Páramo - Caminante.</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#361F1F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Caminante">
+
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+
+    
+    <style>
+        /* --- ESTILOS GENERALES Y FUENTE --- */
+        body {
+
+        background-image: url("https://drive.google.com/thumbnail?id=19sYgdB3R8LBRvGwNcqaQHmIUXQ6CF9-f");
+    
+       /* Asegura que la imagen cubra todo el viewport, recortando si es necesario */
+       background-size: cover; 
+  
+      /* Evita que la imagen pequeña se repita para llenar el espacio */
+      background-repeat: no-repeat; 
+  
+      /* Fija la imagen para que no se mueva al hacer scroll */
+      background-attachment: fixed;
+  
+     /* Centra la imagen en el viewport */
+      background-position: center center;
+
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            
+            color: #4A1507;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #4A1507; 
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        
+        /* --- ESTILOS DEL CONTENEDOR DEL REPRODUCTOR (Tarjera Única) --- */
+        .player-container {
+            background-color: #ffffff; /* Fondo blanco */
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Sombra más pronunciada */
+            transition: transform 0.3s;
+            max-width: 450px;
+            width: 90%; /* Responsive width */
+            margin: 20px auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .player-container:hover {
+            transform: translateY(-3px);
+        }
+
+        /* --- Estilos para la imagen --- */
+        #song-image {
+            width: 200px; /* Tamaño fijo para la imagen */
+            height: 200px;
+            object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* --- ESTILOS DE TÍTULOS --- */
+        h3 {
+            color: #4A1507; /* Azul de Google */
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 1.5em;
+        }
+        
+        p.artist {
+            color: #524E4E;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        /* --- ESTILOS DEL REPRODUCTOR DE AUDIO --- */
+        #audio-player {
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 8px;
+            outline: none;
+            filter: hue-rotate(200deg); /* Personalización sutil del control nativo */
+        }
+
+        /* --- Estilos para los controles de navegación --- */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Espacio entre botones */
+            margin-top: 25px;
+            width: 100%;
+        }
+
+        .controls button {
+            background-color: #361F1F; 
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s;
+            outline: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .controls button:hover {
+            background-color: #1C0303; /* Un poco más oscuro al pasar el ratón */
+            transform: translateY(-1px);
+        }
+
+        .controls button:active {
+            transform: translateY(1px);
+        }
+
+        /* Iconos simples para los botones */
+        .controls button.prev::before { content: '«'; font-weight: bold; font-size: 1.2em; }
+        .controls button.next::after { content: '»'; font-weight: bold; font-size: 1.2em; }
+        .controls button.shuffle::before { content: '⤨'; font-weight: bold; font-size: 1.1em; } /* Símbolo de aleatorio */
+    /* Sensación app nativa */
+.player-container {
+    backdrop-filter: blur(6px);
+}
+
+.controls button {
+    box-shadow: 0 4px 10px rgba(0,0,0,.2);
+}
+
+.controls button:active {
+    box-shadow: 0 2px 6px rgba(0,0,0,.25) inset;
+}
+
+    
+    </style>
+</head>
+<body>
+
+    <h1>Caminante</h1>
+
+    <div class="player-container">
+        <!-- Elemento para la imagen de la canción --><img id="song-image" src="" alt="Imagen de la Canción">
+
+        <!-- Elementos que se actualizarán dinámicamente --><h3 id="song-title">Cargando...</h3>
+        <p class="artist" id="song-artist"></p>
+        
+        <!-- El elemento de audio que controlaremos con JS --><audio id="audio-player" controls>
+            Tu navegador no soporta el elemento de audio.
+        </audio>
+
+        <!-- Controles de navegación --><div class="controls">
+            <button class="prev" id="prev-button">Anterior</button>
+            <button class="shuffle" id="shuffle-button">Aleatorio</button>
+            <button class="next" id="next-button">Siguiente</button>
+        </div>
+    </div>
+
+    <script>
+        // URL de la imagen por defecto
+        const DEFAULT_IMAGE_URL = "https://drive.google.com/thumbnail?id=1RhmT2N-DNISvIV9sg2CnlQ_bQWAioXJM";
+
+        // 1. DEFINICIÓN DE LA PLAYLIST
+        // Agrega tantas canciones como quieras aquí.
+        const originalPlaylist = [ // Renombramos a originalPlaylist para el shuffle
+            {
+                title: "Sala de Emergencia",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2Faace36ed.audio.220835.txt&appVersion=1.000044&signature=b235804772fc770dfbb7daeea1739b6e2efe7e5e02db9687139e511308a26501f46ac545d441c7b805dfaa831e9e78df",
+                imageUrl: DEFAULT_IMAGE_URL // Puedes cambiarla por canción si quieres
+            },
+            {
+                title: "Lou",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2F729c614f.audio.182426.mp3&appVersion=1.000044&signature=7660fc73f8d570575687950165f999783a9a07be83e7a481ec4f5127b6543d6a67356099b8b127a8a99e8d748fba583e",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+            {
+                title: "Caminante",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2F8201040a.audio.220346.txt&appVersion=1.000044&signature=5192d8316ff64e1baee1d33cd0d0c1822c149ab8796be9f6e67bbaa767a1406be9de584ad8e0c246b6e922fd2c9f8389",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+            {
+                title: "Desierto",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2Fff0af922.audio.220421.txt&appVersion=1.000044&signature=24cbd67cf3e59574d7c51092ef2221d0ca99fd18ff0b99f270856939dd03f7de15cfddd4f98ab306f4484e195cd5d8a8",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+           {
+                title: "Sol de medianoche",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2F781b0d16.audio.220912.txt&appVersion=1.000044&signature=f3b623c58dd9dc15be989c6f9683f53a852c8bc6170c6dd539e8de9d9e67cdd43c066eaadc213282f264cbcfe819c69e",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+           {
+                title: "Páramo en el barrio",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2Fb8cb333a.audio.182738.mp3&appVersion=1.000044&signature=111ff5f51e039af5983a7ba8998b74fc3d93277f1dab683d2a4369625d406a215355afa164fc2b4e5237cb36291caf6c",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+           {
+                title: "Paseo nocturno",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2F3d2bf5f5.audio.183109.mp3&appVersion=1.000044&signature=ca2bdcd72eb8b8d55f941f3722cf91d8b51bbb74b9949f450566b6ca6e9c51227c7ea3520d9a756f7db0b4bd1f9bc035",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+           {
+                title: "Día lluvioso",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2F9ae2bed4.audio.183341.mp3&appVersion=1.000044&signature=3b536e5daa4c63d417f130427814507784b1bf7e6d58eed4351a55eb7f365b152b618187e7bb9de93d2028e9a12284ad",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+           {
+                title: "Campaña",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2F483af6b9.audio.220555.txt&appVersion=1.000044&signature=071bcd99dd76c8db3a119351e9a0094cf75f21d1b21cd95b9f188073e30677fb0d9c5237301a6ad44dbe6db135667494",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+           {
+                title: "Plaza 5",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2Ff0426004.audio.220717.txt&appVersion=1.000044&signature=f66d2093bd20f4e3a94d0b19310638959b049b198bf7592ad6701d99bf9678ccfe31ae1c880f0b6cbb3327e9d0d27d6d",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+           {
+                title: "Primavera en el IAVA",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2F62f17ca3.audio.220758.txt&appVersion=1.000044&signature=44ff744b7c0cf94278fcca848756a66bf1ca9b9e9080efa7a2ef74575adb99f9374598fe699f1443056af59e177491b6",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+           {
+                title: "Hartázgo",
+                artist: "Páramo",
+                url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2Fddee46b3.audio.220645.txt&appVersion=1.000044&signature=23f16b77d79630c3392442803b5c18c232bdc80e24b26e9fa648c14829e308ffe3aaf944d596238bea24ef64fee92192",
+                imageUrl: DEFAULT_IMAGE_URL
+            },
+        ];
+
+        let playlist = [...originalPlaylist]; // Creamos una copia editable para el shuffle
+        let currentSongIndex = 0;
+        
+        // Referencias a elementos del DOM
+        const audioPlayer = document.getElementById('audio-player');
+        const songTitleElement = document.getElementById('song-title');
+        const songArtistElement = document.getElementById('song-artist');
+        const songImageElement = document.getElementById('song-image'); // Referencia a la imagen
+
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const shuffleButton = document.getElementById('shuffle-button');
+
+        // 2. FUNCIÓN PARA CARGAR Y ACTUALIZAR LA CANCIÓN
+        function loadSong(index, play = false) { // Agregamos un parámetro 'play' para decidir si reproducir automáticamente
+            if (playlist.length === 0) {
+                songTitleElement.textContent = "No hay canciones en la playlist.";
+                songArtistElement.textContent = "";
+                songImageElement.src = "";
+                audioPlayer.src = "";
+                return;
+            }
+
+            currentSongIndex = (index + playlist.length) % playlist.length; // Asegura que el índice siempre sea válido
+            const song = playlist[currentSongIndex];
+            
+            audioPlayer.src = song.url;
+            audioPlayer.load(); 
+            
+            songTitleElement.textContent = song.title;
+            songArtistElement.textContent = song.artist;
+            songImageElement.src = song.imageUrl || DEFAULT_IMAGE_URL; // Usa la URL de la canción o la predeterminada
+
+            if (play) {
+                audioPlayer.play()
+                    .then(() => {
+                        console.log(`Reproduciendo: ${song.title}`);
+                    })
+                    .catch(error => {
+                        console.warn("La reproducción automática fue bloqueada por el navegador. Por favor, presiona 'Play'.", error);
+                    });
+            }
+        }
+
+        // 3. FUNCIÓN PARA REPRODUCIR LA SIGUIENTE CANCIÓN
+        function playNextSong() {
+            loadSong(currentSongIndex + 1, true); // Carga la siguiente y la reproduce
+        }
+
+        // 4. FUNCIÓN PARA REPRODUCIR LA CANCIÓN ANTERIOR
+        function playPreviousSong() {
+            loadSong(currentSongIndex - 1, true); // Carga la anterior y la reproduce
+        }
+
+        // 5. FUNCIÓN PARA MEZCLAR LA PLAYLIST
+        function shufflePlaylist() {
+            for (let i = playlist.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [playlist[i], playlist[j]] = [playlist[j], playlist[i]]; // Intercambia elementos
+            }
+            currentSongIndex = 0; // Reinicia al principio de la nueva lista mezclada
+            loadSong(currentSongIndex, false); // Carga la primera canción mezclada sin auto-reproducir
+            alert("Playlist mezclada!");
+        }
+
+
+        // 6. ESCUCHAR EVENTOS
+        audioPlayer.addEventListener('ended', playNextSong);
+        prevButton.addEventListener('click', playPreviousSong);
+        nextButton.addEventListener('click', playNextSong);
+        shuffleButton.addEventListener('click', shufflePlaylist);
+
+        // 7. INICIALIZACIÓN
+        window.onload = () => {
+            if (playlist.length > 0) {
+                loadSong(currentSongIndex);
+            }
+        };
+
+    </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(reg => console.log('Service Worker registrado', reg))
+            .catch(err => console.warn('SW error', err));
+    });
+}
+</script>
+
+
+</body>
+</html>
