@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Páramo - Caminante.</title>
 
+    <meta name="mobile-web-app-capable" content="yes">
+
+
 <link rel="manifest" href="./manifest.json">
 
 <meta name="theme-color" content="#361F1F">
@@ -28,8 +31,9 @@
       /* Evita que la imagen pequeña se repita para llenar el espacio */
       background-repeat: no-repeat; 
   
-      /* Fija la imagen para que no se mueva al hacer scroll */
-      background-attachment: fixed;
+      
+      background-attachment: scroll;
+
   
      /* Centra la imagen en el viewport */
       background-position: center center;
@@ -353,5 +357,6 @@ if ('serviceWorker' in navigator) {
 
 </body>
 </html>
+
 
 
