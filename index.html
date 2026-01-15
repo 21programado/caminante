@@ -345,15 +345,13 @@
 
 <script>
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-            .then(reg => console.log('Service Worker registrado', reg))
-            .catch(err => console.warn('SW error', err));
-    });
+  navigator.serviceWorker.register('./service-worker.js');
 }
 </script>
 
 
+
 </body>
 </html>
+
 
