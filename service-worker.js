@@ -1,4 +1,4 @@
-const CACHE_NAME = 'caminante-v3';
+const CACHE_NAME = 'caminante-v4';
 
 const ASSETS = [
   '/',
@@ -34,5 +34,6 @@ self.addEventListener('fetch', event => {
     caches.match(event.request).then(resp => resp || fetch(event.request))
   );
 });
+
 
 
