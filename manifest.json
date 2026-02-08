@@ -2,8 +2,8 @@
   "name": "Páramo - Caminante",
   "short_name": "Caminante",
   "description": "Reproductor musical de Páramo",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#361F1F",
@@ -21,3 +21,4 @@
     }
   ]
 }
+
