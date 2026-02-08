@@ -193,11 +193,21 @@ html, body {
             Tu navegador no soporta el elemento de audio.
         </audio>
 
-        <!-- Controles de navegación --><div class="controls">
-            <button class="prev" id="prev-button">Anterior</button>
-            <button class="shuffle" id="shuffle-button">Aleatorio</button>
-            <button class="next" id="next-button">Siguiente</button>
-        </div>
+        <!-- Controles de navegación -->
+            <div class="controls">
+                <button class="prev" id="prev-button">Anterior</button>
+                <button id="lyrics-button" style="display:none;">Letra</button>
+                <button class="shuffle" id="shuffle-button">Aleatorio</button>
+                <button class="next" id="next-button">Siguiente</button>
+           </div>
+      
+       <!-- letra -->
+       <div id="lyrics-container" style="display:none; margin-top:20px; text-align:left;">
+       <hr>
+       <h4>Letra</h4>
+      <pre id="lyrics-text" style="white-space:pre-wrap; font-family:inherit;"></pre>
+      </div>
+
     </div>
 
     <script>
@@ -230,6 +240,18 @@ html, body {
                 artist: "Páramo",
                 url: "https://www.appsheet.com/template/gettablefileurl?appName=audioplay-50814874&tableName=Hoja%201&fileName=Hoja%201_Files_%2Fff0af922.audio.220421.txt&appVersion=1.000044&signature=24cbd67cf3e59574d7c51092ef2221d0ca99fd18ff0b99f270856939dd03f7de15cfddd4f98ab306f4484e195cd5d8a8",
                 imageUrl: DEFAULT_IMAGE_URL
+                lyrics: `
+    Qué solo estás, solo estás. 
+    Un ojo tuerto no puede mirar 
+    lágrimas, pasión,
+    sonrisas, amor.
+    Si podés pagar hay cómo comprar
+    un ser humano nuevo, 
+    más dócil, más limpio y más feliz
+    Qué solo estás, qué solo estás.
+    Un ojo sano no quiere mostrar
+    un vacío helado, un nuboso desierto.
+    `
             },
            {
                 title: "Sol de medianoche",
@@ -294,36 +316,65 @@ html, body {
         const nextButton = document.getElementById('next-button');
         const shuffleButton = document.getElementById('shuffle-button');
 
+       const lyricsButton = document.getElementById('lyrics-button');  //para la letra
+       const lyricsContainer = document.getElementById('lyrics-container');
+       const lyricsText = document.getElementById('lyrics-text');
+
+
         // 2. FUNCIÓN PARA CARGAR Y ACTUALIZAR LA CANCIÓN
-        function loadSong(index, play = false) { // Agregamos un parámetro 'play' para decidir si reproducir automáticamente
-            if (playlist.length === 0) {
-                songTitleElement.textContent = "No hay canciones en la playlist.";
-                songArtistElement.textContent = "";
-                songImageElement.src = "";
-                audioPlayer.src = "";
-                return;
-            }
+// 2. FUNCIÓN PARA CARGAR Y ACTUALIZAR LA CANCIÓN
+function loadSong(index, play = false) { // 'play' decide si reproducir automáticamente
+    if (playlist.length === 0) {
+        songTitleElement.textContent = "No hay canciones en la playlist.";
+        songArtistElement.textContent = "";
+        songImageElement.src = "";
+        audioPlayer.src = "";
+        lyricsButton.style.display = 'none';
+        lyricsContainer.style.display = 'none';
+        return;
+    }
 
-            currentSongIndex = (index + playlist.length) % playlist.length; // Asegura que el índice siempre sea válido
-            const song = playlist[currentSongIndex];
-            
-            audioPlayer.src = song.url;
-            audioPlayer.load(); 
-            
-            songTitleElement.textContent = song.title;
-            songArtistElement.textContent = song.artist;
-            songImageElement.src = song.imageUrl || DEFAULT_IMAGE_URL; // Usa la URL de la canción o la predeterminada
+    // Asegura que el índice siempre sea válido
+    currentSongIndex = (index + playlist.length) % playlist.length;
+    const song = playlist[currentSongIndex];
 
-            if (play) {
-                audioPlayer.play()
-                    .then(() => {
-                        console.log(`Reproduciendo: ${song.title}`);
-                    })
-                    .catch(error => {
-                        console.warn("La reproducción automática fue bloqueada por el navegador. Por favor, presiona 'Play'.", error);
-                    });
-            }
-        }
+    // Configuración del reproductor
+    audioPlayer.src = song.url;
+    audioPlayer.load(); 
+
+    songTitleElement.textContent = song.title;
+    songArtistElement.textContent = song.artist;
+    songImageElement.src = song.imageUrl || DEFAULT_IMAGE_URL; // Usa la URL de la canción o predeterminada
+
+    // Reproducción automática si se indica
+    if (play) {
+        audioPlayer.play()
+            .then(() => {
+                console.log(`Reproduciendo: ${song.title}`);
+            })
+            .catch(error => {
+                console.warn("La reproducción automática fue bloqueada por el navegador. Presioná 'Play'.", error);
+            });
+    }
+
+    // --- Manejo de letra ---
+    if (song.lyrics) {
+        // Mostrar botón de letra
+        lyricsButton.style.display = 'inline-flex';
+        lyricsText.textContent = song.lyrics;
+        lyricsContainer.style.display = 'none'; // siempre oculto al cargar
+    } else {
+        lyricsButton.style.display = 'none';
+        lyricsContainer.style.display = 'none';
+    }
+}
+
+// --- Evento del botón de letra ---
+lyricsButton.addEventListener('click', () => {
+    const visible = lyricsContainer.style.display === 'block';
+    lyricsContainer.style.display = visible ? 'none' : 'block';
+});
+
 
         // 3. FUNCIÓN PARA REPRODUCIR LA SIGUIENTE CANCIÓN
         function playNextSong() {
@@ -368,12 +419,5 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-
-
 </body>
 </html>
-
-
-
-
-
